@@ -12,4 +12,5 @@
 	--clr-wall-node: hsl(198, 71%, 16%);
 
 	--clr-node-outline: hsl(0, 0%, 27%);
+	--clr-node-shortest-path: hsl(60, 100%, 71%);
 }
