@@ -1,20 +1,50 @@
 .node {
 	width: 25px;
 	height: 25px;
-	outline: 1px solid rgb(53, 53, 53);
+	outline: 1px solid var(--clr-node-outline);
 	display: inline-block;
 }
 
 .wall {
-	background-color: rgb(13, 36, 94);
+	background-color: hsl(198, 71%, 16%);
+	/* animation: wallAnimation 100ms ease-in-out forwards; */
+	/* animation-name: wallAnimation;
+	animation-duration: 0.3s;
+	animation-timing-function: ease-out;
+	animation-delay: 0;
+	animation-direction: alternate;
+	animation-iteration-count: 1;
+	animation-fill-mode: forwards;
+	animation-play-state: running; */
+}
+
+.animate-wall {
+	animation: wallAnimation 300ms ease-in-out forwards;
+}
+
+@keyframes wallAnimation {
+	0% {
+		transform: scale(0.3);
+		background-color: rgb(12, 53, 71);
+	}
+
+	50% {
+		transform: scale(1.2);
+		background-color: rgb(12, 53, 71);
+	}
+
+	100% {
+		transform: scale(1);
+		background-color: rgb(12, 53, 71);
+	}
 }
 
 .start {
-	background-color: green;
+	background-color: hsl(120, 100%, 25%);
 }
 
 .target {
-	background-color: red;
+	background-color: hsl(0, 100%, 50%);
 }
 
 .visited {
@@ -31,7 +61,7 @@
 @keyframes visitedAnimation {
 	0% {
 		transform: scale(0.3);
-		background-color: rgba(0, 0, 66, 0.75);
+		background-color: hsla(240, 100%, 13%, 0.75);
 		border-radius: 100%;
 	}
 
