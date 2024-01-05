@@ -23,8 +23,7 @@ function Node({
 	useEffect(() => {
 		if (status === "wall") {
 			setAnimate(true);
-			// Optional: Reset animation state after animation ends
-			const timer = setTimeout(() => setAnimate(false), 300); // 100ms = animation duration
+			const timer = setTimeout(() => setAnimate(false), 300);
 			return () => clearTimeout(timer);
 		}
 	}, [status]);
