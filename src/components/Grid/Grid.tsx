@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import Node from "../Node/Node";
 import "./grid.css";
 
-interface NodeState {
+export interface NodeState {
 	position: number[];
 	status: string;
+	parentNode: NodeState | null;
 }
 
 interface GridProps {
@@ -12,7 +13,7 @@ interface GridProps {
 	numCols: number;
 }
 
-type GridState = NodeState[][];
+export type GridState = NodeState[][];
 
 function Grid({ numRows, numCols }: GridProps) {
 	const [grid, setGrid] = useState<GridState>([]);
@@ -58,6 +59,7 @@ function Grid({ numRows, numCols }: GridProps) {
 				const newNode: NodeState = {
 					position: nodePos,
 					status: nodeStatus,
+					parentNode: null,
 				};
 				// push this new node to the current row
 				currentRow.push(newNode);
