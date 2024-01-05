@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import gsap from "gsap";
+import { useEffect, useRef } from "react";
 import "./node.css";
 
 interface NodeProps {
@@ -18,21 +19,39 @@ function Node({
 	onMouseEnter,
 	onMouseUp,
 }: NodeProps) {
-	const [animate, setAnimate] = useState(false);
+	const nodeRef = useRef(null);
 
 	useEffect(() => {
+		// apply gsap styles if the node become a wall
 		if (status === "wall") {
-			setAnimate(true);
-			const timer = setTimeout(() => setAnimate(false), 300);
-			return () => clearTimeout(timer);
+			gsap.to(nodeRef.current, {
+				scale: 1.2,
+				duration: 0.1,
+				ease: "ease-out",
+				backgroundColor: "rgb(12, 53, 71)",
+				onComplete: () => {
+					gsap.to(nodeRef.current, {
+						scale: 1,
+						duration: 0.1,
+						backgroundColor: "hsl(198, 71%, 16%)",
+					});
+				},
+			});
+		} else if (status === "unvisited") {
+			// reset styles
+			gsap.to(nodeRef.current, {
+				scale: 1,
+				duration: 0.1,
+				backgroundColor: "",
+				clearProps: "all",
+			});
 		}
 	}, [status]);
 
-	const nodeClasses = `node ${status} ${animate ? "animate-wall" : ""}`;
-
 	return (
 		<div
-			className={nodeClasses}
+			ref={nodeRef}
+			className={`node ${status}`}
 			onMouseDown={() => onMouseDown(row, col)}
 			onMouseEnter={() => onMouseEnter(row, col)}
 			onMouseUp={onMouseUp}
