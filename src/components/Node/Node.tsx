@@ -1,18 +1,42 @@
+import { useEffect, useState } from "react";
 import "./node.css";
 
 interface NodeProps {
-	nodeId: string;
 	status: string;
 	row: number;
 	col: number;
-	onNodeClick: (row: number, col: number) => void;
+	onMouseDown: (row: number, col: number) => void;
+	onMouseEnter: (row: number, col: number) => void;
+	onMouseUp: () => void;
 }
 
-function Node({ nodeId, status, row, col, onNodeClick }: NodeProps) {
+function Node({
+	status,
+	row,
+	col,
+	onMouseDown,
+	onMouseEnter,
+	onMouseUp,
+}: NodeProps) {
+	const [animate, setAnimate] = useState(false);
+
+	useEffect(() => {
+		if (status === "wall") {
+			setAnimate(true);
+			// Optional: Reset animation state after animation ends
+			const timer = setTimeout(() => setAnimate(false), 300); // 100ms = animation duration
+			return () => clearTimeout(timer);
+		}
+	}, [status]);
+
+	const nodeClasses = `node ${status} ${animate ? "animate-wall" : ""}`;
+
 	return (
 		<div
-			className={`node ${status}`}
-			onClick={() => onNodeClick(row, col)}
+			className={nodeClasses}
+			onMouseDown={() => onMouseDown(row, col)}
+			onMouseEnter={() => onMouseEnter(row, col)}
+			onMouseUp={onMouseUp}
 		></div>
 	);
 }
