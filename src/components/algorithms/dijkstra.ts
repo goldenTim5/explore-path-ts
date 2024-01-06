@@ -2,51 +2,49 @@ import { GridState, NodeState } from "../Grid/Grid";
 
 export interface DijkstraReturn {
 	shortestPath: NodeState[];
-	visited: NodeState[];
+	visitedNodes: NodeState[];
 }
 
 export function disjktraAlgorithm(
 	grid: GridState,
 	startNode: NodeState
-): DijkstraReturn | never[] {
+): DijkstraReturn {
 	// define examine and visited arrays
 	const examine: NodeState[] = [startNode];
-	const visited: NodeState[] = [];
+	const visitedNodes: NodeState[] = [];
+	const shortestPath: NodeState[] = [];
 	while (examine.length > 0) {
 		// set current node that is being examined and add it to the visited array
 		// use the "!" to tell typescript that current node can never be undefined
 		// as per while loop condition
 		let currentNode: NodeState | null = examine.pop()!;
-		visited.push(currentNode);
-		currentNode.status = "visited";
+		visitedNodes.push(currentNode);
 
 		if (currentNode.status === "wall") continue;
 
 		// it found the target node
 		// returns the shortest path
 		if (currentNode.status === "target") {
-			const shortestPath: NodeState[] = [];
 			while (currentNode !== null) {
-				shortestPath.push(currentNode);
+				shortestPath.unshift(currentNode);
 				currentNode = currentNode.parentNode;
 			}
-			shortestPath.reverse();
-			return { shortestPath, visited };
+			break;
 		}
 
-		// continue
+		// find the adjacent nodes to the current node
 		const adjecentNodes: NodeState[] = getAdjecentNodes(grid, currentNode);
 		for (const adjecentNode of adjecentNodes) {
 			if (
 				!examine.includes(adjecentNode) &&
-				adjecentNode.status !== "visited"
+				!visitedNodes.includes(adjecentNode)
 			) {
 				adjecentNode.parentNode = currentNode;
 				examine.push(adjecentNode);
 			}
 		}
 	}
-	return [];
+	return { shortestPath, visitedNodes };
 }
 
 function getAdjecentNodes(grid: GridState, node: NodeState): NodeState[] {
