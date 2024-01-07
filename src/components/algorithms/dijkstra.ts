@@ -25,7 +25,7 @@ export function disjktraAlgorithm(
 		// returns the shortest path
 		if (currentNode.status === "target") {
 			while (currentNode !== null) {
-				shortestPath.unshift(currentNode);
+				shortestPath.push(currentNode);
 				currentNode = currentNode.parentNode;
 			}
 			break;
