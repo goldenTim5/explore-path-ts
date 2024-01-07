@@ -5,7 +5,7 @@ import Node from "../Node/Node";
 import { disjktraAlgorithm } from "../algorithms/dijkstra";
 import "./grid.css";
 
-interface NodePosition {
+export interface NodePosition {
 	x: number;
 	y: number;
 }
