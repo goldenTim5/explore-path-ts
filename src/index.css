@@ -7,9 +7,10 @@
 	color: rgba(255, 255, 255, 0.87);
 	background-color: #242424;
 
-	--clr-start-node: hsl(120, 100%, 25%);
+	--clr-start-node: hsl(0, 0%, 83%);
 	--clr-target-node: hsl(0, 100%, 50%);
-	--clr-wall-node: hsl(198, 71%, 16%);
+	--clr-wall-node: hsl(199, 67%, 60%);
+	--clr-visited-node: hsla(176, 100%, 24%, 0.721);
 
 	--clr-node-outline: hsl(0, 0%, 27%);
 	--clr-node-shortest-path: hsl(60, 100%, 71%);
