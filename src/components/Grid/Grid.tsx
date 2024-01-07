@@ -1,9 +1,17 @@
+import gsap from "gsap";
 import { useEffect, useState } from "react";
+import { animatePathfiding } from "../../utils/animations";
 import Node from "../Node/Node";
+import { disjktraAlgorithm } from "../algorithms/dijkstra";
 import "./grid.css";
 
+interface NodePosition {
+	x: number;
+	y: number;
+}
+
 export interface NodeState {
-	position: number[];
+	position: NodePosition;
 	status: string;
 	parentNode: NodeState | null;
 }
@@ -19,14 +27,14 @@ function Grid({ numRows, numCols }: GridProps) {
 	const [grid, setGrid] = useState<GridState>([]);
 	const [isMouseDown, setIsMouseDown] = useState<Boolean>(false);
 
-	const startNodePosition: number[] = [
-		Math.floor(numRows / 2),
-		Math.floor(numCols / 4),
-	];
-	const targetNodePosition: number[] = [
-		Math.floor(numRows / 2),
-		Math.floor((3 * numCols) / 4),
-	];
+	const startNodePosition: NodePosition = {
+		x: Math.floor(numRows / 2),
+		y: Math.floor(numCols / 4),
+	};
+	const targetNodePosition: NodePosition = {
+		x: Math.floor(numRows / 2),
+		y: Math.floor((3 * numCols) / 4),
+	};
 
 	useEffect(() => {
 		setGrid(initializeGrid());
@@ -42,14 +50,14 @@ function Grid({ numRows, numCols }: GridProps) {
 
 			for (let col = 0; col < numCols; col++) {
 				// collect the position and the status
-				const nodePos: number[] = [row, col];
+				const nodePos = { x: row, y: col };
 				let nodeStatus: string;
 
-				if (row === startNodePosition[0] && col === startNodePosition[1]) {
+				if (row === startNodePosition.x && col === startNodePosition.y) {
 					nodeStatus = "start";
 				} else if (
-					row === targetNodePosition[0] &&
-					col === targetNodePosition[1]
+					row === targetNodePosition.x &&
+					col === targetNodePosition.y
 				) {
 					nodeStatus = "target";
 				} else {
@@ -68,6 +76,29 @@ function Grid({ numRows, numCols }: GridProps) {
 			initialGrid.push(currentRow);
 		}
 		return initialGrid;
+	}
+
+	function clearGrid(): void {
+		// reset the grid state
+		setGrid(initializeGrid());
+
+		// reset the styles of each node
+		grid.forEach((row) => {
+			row.forEach((node) => {
+				const nodeId = `node-${node.position.x}-${node.position.y}`;
+				const nodeRef = document.getElementById(nodeId);
+				if (nodeRef) {
+					// stop all GSAP animations on this node
+					gsap.killTweensOf(nodeRef);
+
+					// clear all inline styles set by GSAP
+					gsap.set(nodeRef, { clearProps: "all" });
+
+					// reset class name
+					nodeRef.className = `node ${node.status}`;
+				}
+			});
+		});
 	}
 
 	function handleNodeClick(row: number, col: number): void {
@@ -103,24 +134,38 @@ function Grid({ numRows, numCols }: GridProps) {
 		setIsMouseDown(false);
 	}
 
+	function visualiseDijkstra(): void {
+		const startingNode = grid[startNodePosition.x][startNodePosition.y];
+		const { shortestPath, visitedNodes } = disjktraAlgorithm(
+			grid,
+			startingNode
+		);
+
+		animatePathfiding(shortestPath, visitedNodes);
+	}
+
 	return (
-		<div className="grid">
-			{grid.map((row, rowIndex) => (
-				<div key={rowIndex} className="grid-row">
-					{row.map((node, colIndex) => (
-						<Node
-							key={colIndex}
-							status={node.status}
-							row={node.position[0]}
-							col={node.position[1]}
-							onMouseDown={handleMouseDown}
-							onMouseEnter={handleMouseEnter}
-							onMouseUp={handleMouseUp}
-						/>
-					))}
-				</div>
-			))}
-		</div>
+		<>
+			<button onClick={() => visualiseDijkstra()}>Visualise</button>
+			<button onClick={() => clearGrid()}>Clear Grid</button>
+			<div className="grid">
+				{grid.map((row: NodeState[], rowIndex: number) => (
+					<div key={rowIndex} className="grid-row">
+						{row.map((node, colIndex) => (
+							<Node
+								key={colIndex}
+								status={node.status}
+								row={node.position.x}
+								col={node.position.y}
+								onMouseDown={handleMouseDown}
+								onMouseEnter={handleMouseEnter}
+								onMouseUp={handleMouseUp}
+							/>
+						))}
+					</div>
+				))}
+			</div>
+		</>
 	);
 }
 
