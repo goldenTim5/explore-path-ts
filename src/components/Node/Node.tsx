@@ -20,6 +20,7 @@ function Node({
 	onMouseUp,
 }: NodeProps) {
 	const nodeRef = useRef(null);
+	const nodeId = `node-${row}-${col}`;
 
 	useEffect(() => {
 		// apply gsap styles if the node become a wall
@@ -28,12 +29,12 @@ function Node({
 				scale: 1.2,
 				duration: 0.1,
 				ease: "ease-out",
-				backgroundColor: "rgb(12, 53, 71)",
+				backgroundColor: "var(--clr-wall-node)",
 				onComplete: () => {
 					gsap.to(nodeRef.current, {
 						scale: 1,
 						duration: 0.1,
-						backgroundColor: "hsl(198, 71%, 16%)",
+						backgroundColor: "var(--clr-wall-node)",
 					});
 				},
 			});
@@ -50,6 +51,7 @@ function Node({
 
 	return (
 		<div
+			id={nodeId}
 			ref={nodeRef}
 			className={`node ${status}`}
 			onMouseDown={() => onMouseDown(row, col)}
