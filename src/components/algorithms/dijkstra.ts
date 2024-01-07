@@ -17,10 +17,9 @@ export function disjktraAlgorithm(
 		// set current node that is being examined and add it to the visited array
 		// use the "!" to tell typescript that current node can never be undefined
 		// as per while loop condition
-		let currentNode: NodeState | null = examine.pop()!;
-		visitedNodes.push(currentNode);
-
+		let currentNode: NodeState | null = examine.shift()!;
 		if (currentNode.status === "wall") continue;
+		visitedNodes.push(currentNode);
 
 		// it found the target node
 		// returns the shortest path
@@ -48,14 +47,15 @@ export function disjktraAlgorithm(
 }
 
 function getAdjecentNodes(grid: GridState, node: NodeState): NodeState[] {
+	// debugger;
 	const adjecentNodes: NodeState[] = [];
-	const [row, col] = node.position;
+	const { x, y } = node.position;
 
 	// check all adjacent nodes, up | down | left | right
-	if (row > 0) adjecentNodes.push(grid[row - 1][col]);
-	if (row < grid.length - 1) adjecentNodes.push(grid[row + 1][col]);
-	if (col > 0) adjecentNodes.push(grid[row][col - 1]);
-	if (col < grid[0].length - 1) adjecentNodes.push(grid[row][col + 1]);
+	if (x > 0) adjecentNodes.push(grid[x - 1][y]);
+	if (x < grid.length - 1) adjecentNodes.push(grid[x + 1][y]);
+	if (y > 0) adjecentNodes.push(grid[x][y - 1]);
+	if (y < grid[0].length - 1) adjecentNodes.push(grid[x][y + 1]);
 
 	return adjecentNodes;
 }
