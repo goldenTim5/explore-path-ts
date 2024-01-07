@@ -18,14 +18,15 @@
 }
 
 .visited {
-	animation: visitAnimation 1.5s ease-out forwards;
+	background-color: var(--clr-visited-node);
+	/* animation: visitedAnimation 1.5s ease-out forwards; */
 }
 
 @keyframes visitedAnimation {
 	0% {
 		transform: scale(0.3);
 		background-color: hsla(240, 100%, 13%, 0.75);
-		border-radius: 100%;
+		border-radius: 50%;
 	}
 
 	50% {
@@ -34,7 +35,7 @@
 
 	75% {
 		transform: scale(1.2);
-		background-color: rgba(0, 217, 159, 0.75);
+		background-color: hsla(164, 100%, 43%, 0.75);
 	}
 
 	100% {
@@ -43,9 +44,9 @@
 	}
 }
 
-.cell-shortest-path {
+.short-path {
 	background-color: var(--clr-node-shortest-path);
-	animation: shortestPath 1.5s ease-out forwards;
+	/* animation: shortestPath 1.5s ease-out forwards; */
 }
 
 @keyframes shortestPath {
