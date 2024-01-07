@@ -15,7 +15,7 @@ function App() {
 			setDimensions({ height, width });
 		};
 
-		// calculateDimensions();
+		calculateDimensions();
 
 		window.addEventListener("resize", calculateDimensions);
 
