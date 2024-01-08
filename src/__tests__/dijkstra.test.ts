@@ -1,45 +1,35 @@
 import { disjktraAlgorithm } from "../components/algorithms/dijkstra";
-import { createMockGrid } from "../utils/createMockGrid";
+import { NodeState } from "../components/Grid/Grid";
+import {
+	createMockGridEmpty,
+	createMockGridWithStartTarget,
+	createMockGridWithWalls,
+} from "../utils/createMockGrid";
 
-describe("disjktraAlgorithm", () => {
-	it("should find the shortest path in a simple grid", () => {
-		const grid = createMockGrid(3, 3);
-		grid[0][0].status = "start";
-		grid[2][2].status = "target";
-
-		const startNode = grid[0][0];
-
-		const result = disjktraAlgorithm(grid, startNode);
-		expect(result.shortestPath.length).toBeGreaterThan(0);
-		expect(result.visitedNodes).toContain(startNode);
-		expect(result.shortestPath[result.shortestPath.length - 1].status).toBe(
-			"start"
-		);
-	});
-
+describe("disjktraAlgorithm Tests", () => {
 	it("should return an empty path if there is no target", () => {
-		const grid = createMockGrid(3, 3);
+		const grid = createMockGridEmpty();
+		grid[0][0].status = "start";
 		const startNode = grid[0][0];
 
 		const result = disjktraAlgorithm(grid, startNode);
 		expect(result.visitedNodes).toContain(startNode);
 		expect(result.shortestPath.length).toBe(0);
 	});
-});
 
-describe("disjktraAlgorithm with walls", () => {
-	it("should avoid walls and find a path", () => {
-		const grid = createMockGrid(3, 3);
-		grid[0][0].status = "start";
-		grid[2][2].status = "target";
-
-		// adding walls
-		grid[1][0].status = "wall";
-		grid[1][1].status = "wall";
-
-		const startNode = grid[0][0];
+	it("should avoid walls and find return the shortest path", () => {
+		const { grid, startNode } = createMockGridWithWalls();
 
 		const result = disjktraAlgorithm(grid, startNode);
+
+		const expectedPath = [
+			grid[2][2],
+			grid[1][2],
+			grid[0][2],
+			grid[0][1],
+			grid[0][0],
+		];
+
 		expect(result.shortestPath.length).toBeGreaterThan(0);
 		expect(result.shortestPath[result.shortestPath.length - 1].status).toBe(
 			"start"
@@ -48,40 +38,42 @@ describe("disjktraAlgorithm with walls", () => {
 		expect(result.shortestPath.some((node) => node.status === "wall")).toBe(
 			false
 		);
+		expect(result.shortestPath).toEqual(expectedPath);
 	});
 
-	it.skip("should return the correct shortest path", () => {
-		const grid = createMockGrid(3, 3);
-		grid[0][0].status = "start";
-		grid[2][2].status = "target";
-
-		const startNode = grid[0][0];
+	it("should return the correct shortest path on a grid with no walls", () => {
+		const { grid, startNode } = createMockGridWithStartTarget();
 
 		const result = disjktraAlgorithm(grid, startNode);
 
 		const expectedPath = [
-			grid[0][0],
-			grid[0][1],
-			grid[0][2],
-			grid[1][2],
 			grid[2][2],
+			grid[2][1],
+			grid[2][0],
+			grid[1][0],
+			grid[0][0],
 		];
+
+		expect(result.shortestPath.length).toBeGreaterThan(0);
+		expect(result.visitedNodes).toContain(startNode);
 		expect(result.shortestPath).toEqual(expectedPath);
+		expect(result.shortestPath[result.shortestPath.length - 1].status).toBe(
+			"start"
+		);
 	});
 
-	it("should return an empty path if surrounded by walls", () => {
-		const grid = createMockGrid(3, 3);
-		grid[0][0].status = "start";
-		grid[2][2].status = "target";
+	it("should return an empty path if starting node is surrounded by walls", () => {
+		const { grid, startNode } = createMockGridWithStartTarget();
 
 		// surrounding the start node with walls
 		grid[0][1].status = "wall";
 		grid[1][0].status = "wall";
 		grid[1][1].status = "wall";
 
-		const startNode = grid[0][0];
+		const expectedPath: NodeState[] = [];
 
 		const result = disjktraAlgorithm(grid, startNode);
 		expect(result.shortestPath.length).toBe(0);
+		expect(result.shortestPath).toEqual(expectedPath);
 	});
 });
