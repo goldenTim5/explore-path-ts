@@ -6,7 +6,7 @@ import {
 	createMockGridWithWalls,
 } from "../utils/createMockGrid";
 
-describe("disjktraAlgorithm Tests", () => {
+describe("Disjktra Algorithm Tests", () => {
 	it("should return an empty path if there is no target", () => {
 		const grid = createMockGridEmpty();
 		grid[0][0].status = "start";
