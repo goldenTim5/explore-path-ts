@@ -4,7 +4,7 @@ import Grid from "./components/Grid/Grid";
 function App() {
 	const navbarHeight = 150;
 	const textHeight = 60;
-	const [dimensions, setDimensions] = useState({ height: 5, width: 10 });
+	const [dimensions, setDimensions] = useState({ height: 5, width: 20 });
 
 	useEffect(() => {
 		const calculateDimensions = () => {
@@ -17,7 +17,7 @@ function App() {
 
 		calculateDimensions();
 
-		window.addEventListener("resize", calculateDimensions);
+		// window.addEventListener("resize", calculateDimensions);
 
 		return () => window.removeEventListener("resize", calculateDimensions);
 	}, []);
