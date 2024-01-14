@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { useEffect, useState } from "react";
 import { animatePathfiding } from "../../utils/animations";
 import Node from "../Node/Node";
+import { aStarAlgorithm } from "../algorithms/astar";
 import { disjktraAlgorithm } from "../algorithms/dijkstra";
 import "./grid.css";
 
@@ -78,10 +79,7 @@ function Grid({ numRows, numCols }: GridProps) {
 		return initialGrid;
 	}
 
-	function clearGrid(): void {
-		// reset the grid state
-		setGrid(initializeGrid());
-
+	function clearNodes(clearWalls: boolean): void {
 		// reset the styles of each node
 		grid.forEach((row) => {
 			row.forEach((node) => {
@@ -95,10 +93,20 @@ function Grid({ numRows, numCols }: GridProps) {
 					gsap.set(nodeRef, { clearProps: "all" });
 
 					// reset class name
+					if (clearWalls && node.status !== "start" && node.status !== "target")
+						node.status = "unvisited";
 					nodeRef.className = `node ${node.status}`;
 				}
 			});
 		});
+	}
+
+	function resetGrid(): void {
+		// reset the grid state
+		setGrid(initializeGrid());
+
+		// clear all the styles
+		clearNodes(true);
 	}
 
 	function handleNodeClick(row: number, col: number): void {
@@ -144,10 +152,26 @@ function Grid({ numRows, numCols }: GridProps) {
 		animatePathfiding(shortestPath, visitedNodes);
 	}
 
+	function visualiseAStar(): void {
+		clearNodes(false);
+		const startingNode = grid[startNodePosition.x][startNodePosition.y];
+		const targetNode = grid[targetNodePosition.x][targetNodePosition.y];
+		const { shortestPath, visitedNodes } = aStarAlgorithm(
+			grid,
+			startingNode,
+			targetNode
+		);
+		console.log(shortestPath.length);
+
+		animatePathfiding(shortestPath, visitedNodes);
+	}
+
 	return (
 		<>
-			<button onClick={() => visualiseDijkstra()}>Visualise</button>
-			<button onClick={() => clearGrid()}>Clear Grid</button>
+			<button onClick={() => visualiseAStar()}>Visualise</button>
+			<button onClick={() => resetGrid()}>Reset Grid</button>
+			<button onClick={() => clearNodes(true)}>Clear Walls</button>
+			<button onClick={() => clearNodes(false)}>Clear Path</button>
 			<div className="grid">
 				{grid.map((row: NodeState[], rowIndex: number) => (
 					<div key={rowIndex} className="grid-row">
