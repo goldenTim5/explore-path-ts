@@ -1,4 +1,11 @@
-import { GridState, NodeState } from "../Grid/Grid";
+import PriorityQueue from "../../dataStructures/priorityQueue";
+import { getAdjecentNodes } from "../../utils/getAdjacentNodes";
+import {
+	getEuclideanDistance,
+	getManhattanDistance,
+} from "../../utils/getDistance";
+import { GridState } from "../Grid/Grid";
+import { NodeState } from "../Node/Node";
 
 export interface AStarReturn {
 	shortestPath: NodeState[];
@@ -9,19 +16,28 @@ export interface AStarReturn {
 export function aStarAlgorithm(
 	grid: GridState,
 	startNode: NodeState,
-	targetNode: NodeState
+	targetNode: NodeState,
+	distance: string
 ): AStarReturn {
+	// determine the distance used
+	const getDistance =
+		distance === "euclidean" ? getEuclideanDistance : getManhattanDistance;
+
+	startNode.gCost = 0;
+	startNode.fCost = getDistance(startNode, targetNode);
+
 	// define examine and visited arrays
-	const examine: NodeState[] = [startNode];
-	const visitedNodes: NodeState[] = [];
+	const examine = new PriorityQueue(startNode);
+	const visitedNodes = new Set<NodeState>();
 	const shortestPath: NodeState[] = [];
-	while (examine.length > 0) {
+	// debugger;
+	while (!examine.isEmpty()) {
 		// set current node that is being examined and add it to the visited array
 		// use the "!" to tell typescript that current node can never be undefined
 		// as per while loop condition
-		let currentNode: NodeState | null = examine.shift()!;
+		let currentNode: NodeState | null = examine.dequeue()!;
 		if (currentNode.status === "wall") continue;
-		visitedNodes.push(currentNode);
+		visitedNodes.add(currentNode);
 
 		// if found the target node
 		// returns the shortest path
@@ -34,63 +50,23 @@ export function aStarAlgorithm(
 		}
 
 		// find the adjacent nodes to the current node
-		const adjacentNodes: NodeState[] = getAdjacentNodes(grid, currentNode);
+		const adjacentNodes: NodeState[] = getAdjecentNodes(grid, currentNode);
 		for (const adjacentNode of adjacentNodes) {
-			if (
-				!examine.includes(adjacentNode) &&
-				!visitedNodes.includes(adjacentNode)
-			) {
+			const adjacentGCost = currentNode.gCost + 1;
+			if (adjacentGCost < adjacentNode.gCost) {
 				// set the adjacent node parent to the current node
 				adjacentNode.parentNode = currentNode;
+				adjacentNode.gCost = adjacentGCost;
 
-				// get the distance between the adjacent node and the target node
-				const adjacentNodeDistance = getNodesDistance(adjacentNode, targetNode);
+				// get the fCost, distance between the adjacent node and the target node
+				adjacentNode.fCost =
+					adjacentGCost + getDistance(adjacentNode, targetNode);
 
-				// insertion sort algorithm to insert the adjacent node in the correct place in the examine array
-				// so that A* can visit the nodes that are closer to the target node first
-				let index = 0;
-				for (const examineNode of examine) {
-					// get the distance between the examine node and the target node
-					const examineNodeDistance = getNodesDistance(examineNode, targetNode);
-
-					if (adjacentNodeDistance <= examineNodeDistance) break;
-					index++;
-				}
-
-				// if the index is the same as the length of the examine array
-				// then insert at the end
-				// otherwise, insert at the corresponding index position
-				if (index == examine.length) {
-					examine.push(adjacentNode);
-				} else {
-					examine.splice(index, 0, adjacentNode);
+				if (!visitedNodes.has(adjacentNode)) {
+					examine.enqueue(adjacentNode);
 				}
 			}
 		}
 	}
-	return { shortestPath, visitedNodes };
-}
-
-function getNodesDistance(
-	currentNode: NodeState,
-	targetNode: NodeState
-): number {
-	return Math.sqrt(
-		Math.pow(targetNode.position.x - currentNode.position.x, 2) +
-			Math.pow(targetNode.position.y - currentNode.position.y, 2)
-	);
-}
-
-function getAdjacentNodes(grid: GridState, node: NodeState): NodeState[] {
-	// debugger;
-	const adjacentNodes: NodeState[] = [];
-	const { x, y } = node.position;
-
-	// check all adjacent nodes, up | down | left | right
-	if (x > 0) adjacentNodes.push(grid[x - 1][y]);
-	if (x < grid.length - 1) adjacentNodes.push(grid[x + 1][y]);
-	if (y > 0) adjacentNodes.push(grid[x][y - 1]);
-	if (y < grid[0].length - 1) adjacentNodes.push(grid[x][y + 1]);
-
-	return adjacentNodes;
+	return { shortestPath, visitedNodes: [...visitedNodes] };
 }
