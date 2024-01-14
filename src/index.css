@@ -7,11 +7,20 @@
 	color: rgba(255, 255, 255, 0.87);
 	background-color: #242424;
 
-	--clr-start-node: hsl(0, 0%, 83%);
+	--clr-start-node: hsl(137, 83%, 47%);
 	--clr-target-node: hsl(0, 100%, 50%);
-	--clr-wall-node: hsl(199, 67%, 60%);
-	--clr-visited-node: hsla(176, 100%, 24%, 0.721);
+	--clr-wall-node: hsla(184, 59%, 61%, 0.797);
 
-	--clr-node-outline: hsl(0, 0%, 27%);
-	--clr-node-shortest-path: hsl(60, 100%, 71%);
+	--clr-node-outline: hsl(0, 0%, 25%);
+	--clr-node-shortest-path: hsl(60, 100%, 63%);
+	--clr-node-shortest-path1: hsla(287, 90%, 51%, 0.953);
+
+	--clr-node-shortest-path: hsl(35, 100%, 60%);
+	--clr-node-shortest-path1: hsl(60, 100%, 63%);
+
+	--clr-visited-node: hsla(188, 100%, 43%, 0.75);
+	--clr-visited-start: hsla(210, 100%, 50%, 0.75);
+	--clr-visited-mid: hsla(270, 53%, 44%, 0.746);
+	--clr-visited-end: hsla(184, 59%, 61%, 0.797);
+	--clr-visited-end: hsla(270, 100%, 72%, 0.719);
 }
