@@ -90,9 +90,9 @@
 
 @keyframes shortestPath {
 	0% {
-		background-color: var(--clr-node-shortest-path1);
-		box-shadow: 0 0 5px var(--clr-node-shortest-path1),
-			0 0 10px var(--clr-node-shortest-path1);
+		background-color: var(--clr-node-shortest-path-start);
+		box-shadow: 0 0 5px var(--clr-node-shortest-path-start),
+			0 0 10px var(--clr-node-shortest-path-start);
 		border-radius: 50%;
 		transform: scale(0.4);
 	}
