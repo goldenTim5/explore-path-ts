@@ -2,6 +2,19 @@ import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import "./node.css";
 
+export interface NodePosition {
+	x: number;
+	y: number;
+}
+
+export interface NodeState {
+	position: NodePosition;
+	status: string;
+	parentNode: NodeState | null;
+	gCost: number;
+	fCost: number;
+}
+
 interface NodeProps {
 	status: string;
 	row: number;
