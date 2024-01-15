@@ -1,19 +1,9 @@
 import gsap from "gsap";
+import { NodeState } from "../components/Node/Node";
 
 const visitedAnimationTime = 10;
 const shortPathAnimationTime = 50; // this number has to be bigger than the above
 const keepVisitedAnimation = true;
-
-interface NodePosition {
-	x: number;
-	y: number;
-}
-
-export interface NodeState {
-	position: NodePosition;
-	status: string;
-	parentNode: NodeState | null;
-}
 
 function animateNode(nodeId: string, className: string): void {
 	// add animation class to each node
