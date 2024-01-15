@@ -1,21 +1,12 @@
 import gsap from "gsap";
 import { useEffect, useState } from "react";
 import { animatePathfiding } from "../../utils/animations";
-import Node from "../Node/Node";
+import Node, { NodePosition, NodeState } from "../Node/Node";
 import { aStarAlgorithm } from "../algorithms/astar";
 import { disjktraAlgorithm } from "../algorithms/dijkstra";
 import "./grid.css";
 
-export interface NodePosition {
-	x: number;
-	y: number;
-}
-
-export interface NodeState {
-	position: NodePosition;
-	status: string;
-	parentNode: NodeState | null;
-}
+const distance = "manhattan";
 
 interface GridProps {
 	numRows: number;
@@ -69,6 +60,8 @@ function Grid({ numRows, numCols }: GridProps) {
 					position: nodePos,
 					status: nodeStatus,
 					parentNode: null,
+					gCost: Infinity,
+					fCost: Infinity,
 				};
 				// push this new node to the current row
 				currentRow.push(newNode);
@@ -92,9 +85,15 @@ function Grid({ numRows, numCols }: GridProps) {
 					// clear all inline styles set by GSAP
 					gsap.set(nodeRef, { clearProps: "all" });
 
-					// reset class name
+					// reset costs
+					node.gCost = Infinity;
+					node.fCost = Infinity;
+
+					// reset walls
 					if (clearWalls && node.status !== "start" && node.status !== "target")
 						node.status = "unvisited";
+
+					// reset class name
 					nodeRef.className = `node ${node.status}`;
 				}
 			});
@@ -143,6 +142,7 @@ function Grid({ numRows, numCols }: GridProps) {
 	}
 
 	function visualiseDijkstra(): void {
+		clearNodes(false);
 		const startingNode = grid[startNodePosition.x][startNodePosition.y];
 		const { shortestPath, visitedNodes } = disjktraAlgorithm(
 			grid,
@@ -159,16 +159,17 @@ function Grid({ numRows, numCols }: GridProps) {
 		const { shortestPath, visitedNodes } = aStarAlgorithm(
 			grid,
 			startingNode,
-			targetNode
+			targetNode,
+			distance
 		);
-		console.log(shortestPath.length);
 
 		animatePathfiding(shortestPath, visitedNodes);
 	}
 
 	return (
 		<>
-			<button onClick={() => visualiseAStar()}>Visualise</button>
+			<button onClick={() => visualiseDijkstra()}>Visualise Dijkstra</button>
+			<button onClick={() => visualiseAStar()}>Visualise A*</button>
 			<button onClick={() => resetGrid()}>Reset Grid</button>
 			<button onClick={() => clearNodes(true)}>Clear Walls</button>
 			<button onClick={() => clearNodes(false)}>Clear Path</button>
