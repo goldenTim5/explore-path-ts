@@ -1,4 +1,7 @@
-import { GridState, NodeState } from "../Grid/Grid";
+import Queue from "../../dataStructures/queue";
+import { getAdjecentNodes } from "../../utils/getAdjacentNodes";
+import { GridState } from "../Grid/Grid";
+import { NodeState } from "../Node/Node";
 
 export interface DijkstraReturn {
 	shortestPath: NodeState[];
@@ -9,23 +12,23 @@ export function disjktraAlgorithm(
 	grid: GridState,
 	startNode: NodeState
 ): DijkstraReturn {
-	// define examine and visited arrays
-	const examine: NodeState[] = [startNode];
-	const visitedNodes: NodeState[] = [];
+	const examine = new Queue(startNode);
+	const visitedNodes = new Set<NodeState>();
 	const shortestPath: NodeState[] = [];
-	while (examine.length > 0) {
+
+	while (!examine.isEmpty()) {
 		// set current node that is being examined and add it to the visited array
 		// use the "!" to tell typescript that current node can never be undefined
 		// as per while loop condition
-		let currentNode: NodeState | null = examine.shift()!;
+		let currentNode: NodeState | null = examine.dequeue()!;
 		if (currentNode.status === "wall") continue;
-		visitedNodes.push(currentNode);
+		visitedNodes.add(currentNode);
 
 		// it found the target node
 		// returns the shortest path
 		if (currentNode.status === "target") {
 			while (currentNode !== null) {
-				shortestPath.push(currentNode);
+				shortestPath.unshift(currentNode);
 				currentNode = currentNode.parentNode;
 			}
 			break;
@@ -34,28 +37,11 @@ export function disjktraAlgorithm(
 		// find the adjacent nodes to the current node
 		const adjecentNodes: NodeState[] = getAdjecentNodes(grid, currentNode);
 		for (const adjecentNode of adjecentNodes) {
-			if (
-				!examine.includes(adjecentNode) &&
-				!visitedNodes.includes(adjecentNode)
-			) {
+			if (!examine.includes(adjecentNode) && !visitedNodes.has(adjecentNode)) {
 				adjecentNode.parentNode = currentNode;
-				examine.push(adjecentNode);
+				examine.enqueue(adjecentNode);
 			}
 		}
 	}
-	return { shortestPath, visitedNodes };
-}
-
-function getAdjecentNodes(grid: GridState, node: NodeState): NodeState[] {
-	// debugger;
-	const adjecentNodes: NodeState[] = [];
-	const { x, y } = node.position;
-
-	// check all adjacent nodes, up | down | left | right
-	if (x > 0) adjecentNodes.push(grid[x - 1][y]);
-	if (x < grid.length - 1) adjecentNodes.push(grid[x + 1][y]);
-	if (y > 0) adjecentNodes.push(grid[x][y - 1]);
-	if (y < grid[0].length - 1) adjecentNodes.push(grid[x][y + 1]);
-
-	return adjecentNodes;
+	return { shortestPath, visitedNodes: [...visitedNodes] };
 }
