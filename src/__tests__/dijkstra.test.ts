@@ -1,5 +1,5 @@
 import { disjktraAlgorithm } from "../components/algorithms/dijkstra";
-import { NodeState } from "../components/Grid/Grid";
+import { NodeState } from "../components/Node/Node";
 import {
 	createMockGridEmpty,
 	createMockGridWithStartTarget,
