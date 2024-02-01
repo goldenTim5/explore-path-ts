@@ -12,6 +12,8 @@ export function createMockGridEmpty(
 				position: { x, y },
 				status: "unvisited",
 				parentNode: null,
+				gCost: Infinity,
+				fCost: Infinity,
 			};
 		}
 	}
