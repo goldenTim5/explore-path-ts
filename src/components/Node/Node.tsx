@@ -19,7 +19,7 @@ interface NodeProps {
 	status: string;
 	row: number;
 	col: number;
-	onMouseDown: (row: number, col: number) => void;
+	onMouseDown: (event: React.MouseEvent, row: number, col: number) => void;
 	onMouseEnter: (row: number, col: number) => void;
 	onMouseUp: () => void;
 }
@@ -67,7 +67,7 @@ function Node({
 			id={nodeId}
 			ref={nodeRef}
 			className={`node ${status}`}
-			onMouseDown={() => onMouseDown(row, col)}
+			onMouseDown={(event) => onMouseDown(event, row, col)}
 			onMouseEnter={() => onMouseEnter(row, col)}
 			onMouseUp={onMouseUp}
 		></div>
