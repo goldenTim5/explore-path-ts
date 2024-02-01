@@ -1,23 +1,29 @@
 import gsap from "gsap";
 import { useEffect, useState } from "react";
 import { animatePathfiding } from "../../utils/animations";
+import Footer from "../Footer/Footer";
+import NavBar from "../Nav/Nav";
 import Node, { NodePosition, NodeState } from "../Node/Node";
 import { aStarAlgorithm } from "../algorithms/astar";
 import { disjktraAlgorithm } from "../algorithms/dijkstra";
 import "./grid.css";
 
-const distance = "manhattan";
-
 interface GridProps {
 	numRows: number;
 	numCols: number;
+	calculateDimensions: () => void;
 }
 
 export type GridState = NodeState[][];
 
-function Grid({ numRows, numCols }: GridProps) {
+function Grid({ numRows, numCols, calculateDimensions }: GridProps) {
 	const [grid, setGrid] = useState<GridState>([]);
-	const [isMouseDown, setIsMouseDown] = useState<Boolean>(false);
+	const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
+	const [selectedAlgorithm, setSelectedAlgorithm] =
+		useState<string>("dijkstra");
+	const [distanceCalculation, setDistanceCalculation] = useState<string>("");
+	// 0 for left, 1 for right
+	const [pressedMouseButton, setPressedMouseButton] = useState<number>(-1);
 
 	const startNodePosition: NodePosition = {
 		x: Math.floor(numRows / 2),
@@ -101,6 +107,8 @@ function Grid({ numRows, numCols }: GridProps) {
 	}
 
 	function resetGrid(): void {
+		// re-calculate the dimensions of the grid
+		calculateDimensions();
 		// reset the grid state
 		setGrid(initializeGrid());
 
@@ -108,15 +116,28 @@ function Grid({ numRows, numCols }: GridProps) {
 		clearNodes(true);
 	}
 
-	function handleNodeClick(row: number, col: number): void {
+	function disableRightClick(event: React.MouseEvent) {
+		event.preventDefault();
+	}
+
+	function handleNodeClick(
+		mouseButton: number,
+		row: number,
+		col: number
+	): void {
 		// create a copy of the grid and toggle the current node status
 		const newGrid = grid.map((gridRow, r) =>
 			gridRow.map((cell, c) => {
 				if (r === row && c === col) {
+					console.log(mouseButton);
+
 					let newStatus = cell.status;
-					if (cell.status === "unvisited") {
+					// left click to create walls
+					if (mouseButton === 0 && cell.status === "unvisited") {
 						newStatus = "wall";
-					} else if (cell.status === "wall") {
+					}
+					// right click to remove walls
+					else if (mouseButton === 2 && cell.status === "wall") {
 						newStatus = "unvisited";
 					}
 					return { ...cell, status: newStatus };
@@ -127,53 +148,76 @@ function Grid({ numRows, numCols }: GridProps) {
 		setGrid(newGrid);
 	}
 
-	function handleMouseDown(row: number, col: number): void {
+	function handleMouseDown(
+		event: React.MouseEvent,
+		row: number,
+		col: number
+	): void {
+		event.preventDefault();
 		setIsMouseDown(true);
-		handleNodeClick(row, col);
+		setPressedMouseButton(event.button);
+		handleNodeClick(event.button, row, col);
 	}
 
 	function handleMouseEnter(row: number, col: number): void {
 		if (!isMouseDown) return;
-		handleNodeClick(row, col);
+		handleNodeClick(pressedMouseButton, row, col);
 	}
 
 	function handleMouseUp(): void {
 		setIsMouseDown(false);
+		setPressedMouseButton(-1);
+	}
+
+	useEffect(() => {
+		window.addEventListener("mouseup", handleMouseUp);
+
+		return () => window.addEventListener("mouseup", handleMouseUp);
+	}, []);
+
+	function onStart() {
+		if (!selectedAlgorithm) return;
+		if (selectedAlgorithm === "dijkstra") return visualiseDijkstra();
+		if (selectedAlgorithm === "astar") return visualiseAStar();
 	}
 
 	function visualiseDijkstra(): void {
-		clearNodes(false);
 		const startingNode = grid[startNodePosition.x][startNodePosition.y];
 		const { shortestPath, visitedNodes } = disjktraAlgorithm(
 			grid,
 			startingNode
 		);
 
+		clearNodes(false);
 		animatePathfiding(shortestPath, visitedNodes);
 	}
 
 	function visualiseAStar(): void {
-		clearNodes(false);
 		const startingNode = grid[startNodePosition.x][startNodePosition.y];
 		const targetNode = grid[targetNodePosition.x][targetNodePosition.y];
 		const { shortestPath, visitedNodes } = aStarAlgorithm(
 			grid,
 			startingNode,
 			targetNode,
-			distance
+			distanceCalculation
 		);
+		clearNodes(false);
 
 		animatePathfiding(shortestPath, visitedNodes);
 	}
 
 	return (
 		<>
-			<button onClick={() => visualiseDijkstra()}>Visualise Dijkstra</button>
-			<button onClick={() => visualiseAStar()}>Visualise A*</button>
-			<button onClick={() => resetGrid()}>Reset Grid</button>
-			<button onClick={() => clearNodes(true)}>Clear Walls</button>
-			<button onClick={() => clearNodes(false)}>Clear Path</button>
-			<div className="grid">
+			<NavBar
+				selectedAlgorithm={selectedAlgorithm}
+				setSelectedAlgorithm={setSelectedAlgorithm}
+				onStart={onStart}
+				resetGrid={resetGrid}
+				clearNodes={clearNodes}
+				setDistanceCalculation={setDistanceCalculation}
+				distanceCalculation={distanceCalculation}
+			/>
+			<div draggable="false" className="grid" onContextMenu={disableRightClick}>
 				{grid.map((row: NodeState[], rowIndex: number) => (
 					<div key={rowIndex} className="grid-row">
 						{row.map((node, colIndex) => (
@@ -190,6 +234,7 @@ function Grid({ numRows, numCols }: GridProps) {
 					</div>
 				))}
 			</div>
+			<Footer />
 		</>
 	);
 }
