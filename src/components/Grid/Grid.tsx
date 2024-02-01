@@ -21,7 +21,8 @@ function Grid({ numRows, numCols, calculateDimensions }: GridProps) {
 	const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
 	const [selectedAlgorithm, setSelectedAlgorithm] =
 		useState<string>("dijkstra");
-	const [distanceCalculation, setDistanceCalculation] = useState<string>("");
+	const [distanceCalculation, setDistanceCalculation] =
+		useState<string>("manhattan");
 	// 0 for left, 1 for right
 	const [pressedMouseButton, setPressedMouseButton] = useState<number>(-1);
 

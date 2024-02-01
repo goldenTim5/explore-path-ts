@@ -23,7 +23,7 @@ function NavBar({
 	const [isDisabled, setIsDisabled] = useState(true);
 	function handleAlgorithmChange(e: React.ChangeEvent<HTMLSelectElement>) {
 		const value = e.target.value;
-		setSelectedAlgorithm(e.target.value);
+		setSelectedAlgorithm(value);
 		if (value === "dijkstra") {
 			setIsDisabled(true);
 			return;
