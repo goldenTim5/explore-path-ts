@@ -1,0 +1,57 @@
+.nav-bar-bg {
+	margin-bottom: 1rem;
+	background-color: #333;
+}
+
+.nav-bar {
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	color: #fff;
+	max-width: 70rem;
+}
+
+.nav-links {
+	list-style: none;
+	display: flex;
+	align-items: center;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-links li {
+	margin-right: 20px;
+}
+
+.nav-links li a {
+	text-decoration: none;
+	color: #fff;
+	background-color: #555;
+	padding: 5px 15px;
+	border-radius: 5px;
+	transition: background-color 0.3s ease;
+}
+
+.nav-links li a:hover {
+	background-color: #777;
+}
+
+.distance-select {
+	margin-right: 1rem;
+}
+
+.algorithm-select,
+.distance-select {
+	padding: 5px 10px;
+	background-color: #555;
+	color: #ddd;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+.algorithm-select:hover {
+	background-color: #777;
+}
